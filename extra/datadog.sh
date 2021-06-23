@@ -179,9 +179,9 @@ DD_TAGS_YAML="tags:\n  - $(sed "s/\ /\\\n  - /g"  <<< "$DD_TAGS")"
 
 # Inject tags after example tags.
 # Config files for agent versions 6.11 and earlier:
-sed -i "s/^#   - role:database$/#   - role:database\n$DD_TAGS_YAML/" "$DATADOG_CONF"
+#sed -i "s/^#   - role:database$/#   - role:database\n$DD_TAGS_YAML/" "$DATADOG_CONF"
 # Agent versions 6.12 and later:
-sed -i "s/^\(## @param tags\)/$DD_TAGS_YAML\n\1/" "$DATADOG_CONF"
+#sed -i "s/^\(## @param tags\)/$DD_TAGS_YAML\n\1/" "$DATADOG_CONF"
 
 # Export host type as dyno
 export DD_HEROKU_DYNO="true"
