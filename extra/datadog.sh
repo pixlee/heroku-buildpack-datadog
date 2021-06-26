@@ -51,17 +51,12 @@ done
 DYNOHOST="$(hostname )"
 DYNOTYPE=${DYNO%%.*}
 BUILDPACKVERSION="dev"
-DYNO_TAGS="dyno:$DYNO dynotype:$DYNOTYPE buildpackversion:$BUILDPACKVERSION"
 
 # We want always to have the Dyno ID as a host alias to improve correlation
 export DD_HOST_ALIASES="$DYNOHOST"
 
 # Include install method
 echo -e "install_method:\n  tool: heroku\n  tool_version: heroku\n  installer_version: heroku-$BUILDPACKVERSION" > "$DD_INSTALL_INFO"
-
-if [ -n "$HEROKU_APP_NAME" ]; then
-  DYNO_TAGS="$DYNO_TAGS appname:$HEROKU_APP_NAME"
-fi
 
 # Uncomment APM configs and add the log file location.
 sed -i -e"s|^# apm_config:$|apm_config:|" "$DATADOG_CONF"
@@ -161,21 +156,11 @@ if [ -e "$PRERUN_SCRIPT" ]; then
   source "$PRERUN_SCRIPT"
 fi
 
-# Convert comma delimited tags from env vars to yaml
-if [ -n "$DD_TAGS" ]; then
-  DD_TAGS_NORMALIZED="$(sed "s/,[ ]\?/\ /g"  <<< "$DD_TAGS")"
-  DD_TAGS="$DYNO_TAGS $DD_TAGS_NORMALIZED"
-else
-  DD_TAGS="$DYNO_TAGS"
-fi
 
 export DD_VERSION="$DD_VERSION"
-export DD_TAGS="$DD_TAGS"
-if [ "$DD_LOG_LEVEL_LOWER" == "debug" ]; then
-  echo "[DEBUG] Buildpack normalized tags: $DD_TAGS_NORMALIZED"
-fi
+export DD_TAGS=""
 
-DD_TAGS_YAML="tags:\n  - $(sed "s/\ /\\\n  - /g"  <<< "$DD_TAGS")"
+#DD_TAGS_YAML="tags:\n  - $(sed "s/\ /\\\n  - /g"  <<< "$DD_TAGS")"
 
 # Inject tags after example tags.
 # Config files for agent versions 6.11 and earlier:
